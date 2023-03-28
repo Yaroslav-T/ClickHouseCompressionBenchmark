@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+
+  server:
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+      - "9009:9009"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/?query=SELECT%201 || exit 1
+
+  benchmark:
+    build:
+      context: ./benchmark
+      dockerfile: Dockerfile
+    depends_on:
+      server:
+        condition: service_healthy
+    volumes:
+      - ./report:/src/report
+      - ./csv:/src/csv
+    env_file:
+      - var.env
+

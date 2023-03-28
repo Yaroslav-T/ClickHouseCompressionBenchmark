@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+
+  benchmark:
+    build:
+      context: ./benchmark
+      dockerfile: Dockerfile
+    volumes:
+      - ./report:/src/report
+      - ./csv:/src/csv
+    env_file:
+      - var.env
+
